@@ -32,9 +32,9 @@ public class MainCamera : MonoBehaviour
 		CameraMode = 0;
 		//カメラが対象を俯瞰できる初期位置と角度を格納する
 		CameraPx = 0f;
-		CameraPy = 3f;
-		CameraPz = -5f;
-		CameraRx = 20f;
+		CameraPy = 20f;
+		CameraPz = -25f;
+		CameraRx = 25f;
 		CameraRy = 0f;
 		//起動時に機体の角度を取得しておく
 		RotationA = BodyObject.rotation.eulerAngles;
