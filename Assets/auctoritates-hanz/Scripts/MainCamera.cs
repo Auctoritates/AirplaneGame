@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MainCame
-{
 public class MainCamera : MonoBehaviour 
 {
 	//カメラのモードを決める為のスイッチ変数を宣言する
@@ -183,5 +181,4 @@ public class MainCamera : MonoBehaviour
 		RotationA = RotationB;
 	}
 
-}
 }
