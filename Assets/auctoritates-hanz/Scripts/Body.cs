@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace B
-{
 public class Body : MonoBehaviour 
 {
 	//変数の宣言と初期化
@@ -156,5 +154,4 @@ public class Body : MonoBehaviour
 		}		
 	}
 	}
-}
 }
