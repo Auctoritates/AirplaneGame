@@ -152,16 +152,16 @@ public class MainCamera : MonoBehaviour
 
 		case 1: //主観
 			//Bodyの現在の角度に合わせてCameraの角度を変更
-			CameraRotation.x = RotationB.x * 1;
-			CameraRotation.y = RotationB.y * 1;
-			CameraRotation.z = RotationB.z * 1;
+			CameraRotation.x = RotationB.x * 1f;
+			CameraRotation.y = RotationB.y * 1f;
+			CameraRotation.z = RotationB.z * 1f;
 			//カメラの角度を決定
 			GetComponent<Transform>().rotation = Quaternion.Euler(CameraRotation);
 			
 			//カメラの位置を決定する
-			CameraPosition.x = BodyPosition.x + CameraPx;
-			CameraPosition.y = BodyPosition.y;
-			CameraPosition.z = BodyPosition.z;
+			CameraPosition.x = BodyPosition.x + CameraPx * 0f;
+			CameraPosition.y = BodyPosition.y + CameraPy * 0.5f;
+			CameraPosition.z = BodyPosition.z + CameraPz * 0f;
 			//決定された位置にカメラを置く
 			GetComponent<Transform>().position = CameraPosition;
 			break;
