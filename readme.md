@@ -1,4 +1,4 @@
-# UnityProject
+﻿# UnityProject
 ## 作成物
 - 挙動を調整したaircraftオブジェクト
 - ゲームモード選択画面+管理スクリプト
@@ -17,4 +17,5 @@ http://blog.livedoor.jp/bribser_dev/archives/4230746.html
 - masterブランチは使わない。
 - キャラクターのアクションを実装するなど部分部分の作業をする人が専用のfeatureブランチを切って開発していく。
 - 少し進めたら「ここまで実装できた」と目印を作り、テストを終えてdevelopブランチに結合する。
-- こうすると問題発生時の被害を抑えられ
+- こうすると問題発生時の被害を抑えられる。
+- slackではデジコン(tcu-dc.slack.com)のauctoritatesチャンネルを使用
