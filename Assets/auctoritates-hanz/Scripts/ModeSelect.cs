@@ -8,31 +8,30 @@ public class ModeSelect : MonoBehaviour
 {
 	//変数を宣言
 	//モードセレクト画面のオブジェクト用の変数
-	public GameObject _OptionObject;//オプションオブジェクト
-	public GameObject _ModeSelectCanvas;//UIキャンバス
-	public GameObject _StartButton;//スタートボタンオブジェクト
-	public GameObject _OptionButton;//オプションボタンオブジェクト
-	public GameObject _EndButton;//終了ボタンオブジェクト
-	public Text _TitleText;//タイトルテキスト(最前)
 	public string _TitleName = "";//このゲームのタイトル名
 	public string _SceneGame = "";//ゲームシーン用のファイル名
-	public string _OptionMode = "";//オプション用の合図
-	public string _End = "";//ゲーム終了用の合図
+	private string _OptionMode = "";//オプション用の合図
+	private string _End = "";//ゲーム終了用の合図
+	private GameObject _OptionObject;//オプションオブジェクト
+	private GameObject _StartButton;//スタートボタンオブジェクト
+	private GameObject _OptionButton;//オプションボタンオブジェクト
+	private GameObject _EndButton;//終了ボタンオブジェクト
+	private Text _TitleText;//タイトルテキスト(最前)
 	//カーソル移動に関する変数
-	public GameObject _ButtonSelected;//現在選択されているボタンのオブジェクト
-	public Color _Bright = Color.clear;//選択されているボタン用の明るい色
-	public Color _Pale = Color.clear;//選択されていないボタン用の透明度の低い色
-	public Color _Pressed = Color.clear;//決定されたボタン用のやや暗い色
-	public int _SelectedNumber = 0;//現在選択されているボタンのID 0=スタートボタン, 1=オプションボタン, 2=終了ボタン
-	public int _TimeAfterSelect = 0;//前回のカーソル移動後の経過時間
-	public int _Interval = 0;//カーソル移動後、再びカーソル移動を受け付けるまでの時間設定
-	public bool _IsSelectedNow = false;//true=カーソル移動が行われて間もない
+	private GameObject _ButtonSelected;//現在選択されているボタンのオブジェクト
+	private Color _Bright = Color.clear;//選択されているボタン用の明るい色
+	private Color _Pale = Color.clear;//選択されていないボタン用の透明度の低い色
+	private Color _Pressed = Color.clear;//決定されたボタン用のやや暗い色
+	private int _SelectedNumber = 0;//現在選択されているボタンのID 0=スタートボタン, 1=オプションボタン, 2=終了ボタン
+	private int _TimeAfterSelect = 0;//前回のカーソル移動後の経過時間
+	private int _Interval = 0;//カーソル移動後、再びカーソル移動を受け付けるまでの時間設定
+	private bool _IsSelectedNow = false;//true=カーソル移動が行われて間もない
 	//一時的な値を格納する変数
-	public string _SceneName = "";//読み込むシーンの名前
-	public GameObject _TmpObject;//一時的に指定するゲームオブジェクト
-	public Button _PointingButton;//指定したボタンオブジェクトのボタンコンポーネントを格納する変数
-	public ColorBlock _TmpColorBlock;//一時的なボタンオブジェクトのボタンコンポーネントのカラーブロック
-	public Image _TmpImage;//一時的なオブジェクトのイメージコンポーネント
+	private string _SceneName = "";//読み込むシーンの名前
+	private GameObject _TmpObject;//一時的に指定するゲームオブジェクト
+	private Button _PointingButton;//指定したボタンオブジェクトのボタンコンポーネントを格納する変数
+	private ColorBlock _TmpColorBlock;//一時的なボタンオブジェクトのボタンコンポーネントのカラーブロック
+	private Image _TmpImage;//一時的なオブジェクトのイメージコンポーネント
 
 	// Use this for initialization
 	void Start () 
@@ -49,7 +48,6 @@ public class ModeSelect : MonoBehaviour
 
 		//UIオブジェクトを取得
 		//キャンバス内のUIパーツの詳細はコンポーネント扱い
-		_ModeSelectCanvas = GameObject.Find("ModeSelectCanvas");//UIキャンバスを取得
 		_StartButton = GameObject.Find("StartButton");//スタートボタンのオブジェクトを取得
 		_OptionButton = GameObject.Find("OptionButton");
 		_EndButton = GameObject.Find("EndButton");
