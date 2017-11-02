@@ -5,21 +5,20 @@ using UnityEngine;
 public class MainCamera : MonoBehaviour 
 {
 	//カメラのモードを決める為のスイッチ変数を宣言する
-	public int CameraMode = 0; //0=俯瞰,1=主観
+	public int CameraMode = 0; //0=俯瞰,1=主観
 	//読み込んだデータを格納計算するための変数を宣言する
 	private Vector3 CameraPosition = Vector3.zero; //カメラの移動後の座標を格納する変数
 	private Vector3 CameraRotation = Vector3.zero; //カメラの角度を格納する変数
 	private Vector3 BodyPosition = Vector3.zero; //機体の現在の位置を格納する変数
 	private Vector3 DistanceToBody = Vector3.zero; //機体との相対座標を格納する変数
-	private Vector3 RotationA = Vector3.zero; //機体の前回の角度を格納する変数
-	private Vector3 RotationB = Vector3.zero; //機体の現在の角度を格納する変数
-	private Vector3 RotationC = Vector3.zero; //機体の角度の変化量を格納する変数
-	private Vector3 RotationD = Vector3.zero; //何らかの角度を格納しておく一時的な変数
-	private float CameraPx = 0; //カメラ初期位置x
-	private float CameraPy = 0; //カメラ初期位置y
-	private float CameraPz = 0; //カメラ初期位置z
-	private float CameraRx = 0; //カメラ初期角度x
-	private float CameraRy = 0; //カメラ初期角度y
+	private Vector3 LastRotation = Vector3.zero; //機体の前回の角度を格納する変数
+	private Vector3 NowRotation = Vector3.zero; //機体の現在の角度を格納する変数
+	private Vector3 DiffRotation = Vector3.zero; //機体の角度の変化量を格納する変数
+	public float CameraPx = 0; //カメラ初期位置x
+	public float CameraPy = 20f; //カメラ初期位置y
+	public float CameraPz = -25f; //カメラ初期位置z
+	public float CameraRx = 25f; //カメラ初期角度x
+	public float CameraRy = 0; //カメラ初期角度y
 	private float xAdjust = 0.0f; //機体のx角を調整して格納する変数
 	private float xTheta = 0.0f; //機体のx角を三角関数的に保存するための変数
 
@@ -31,38 +30,38 @@ public class MainCamera : MonoBehaviour
 	{
 		CameraMode = 0;
 		//カメラが対象を俯瞰できる初期位置と角度を格納する
-		CameraPx = 0f;
+		/*CameraPx = 0f;
 		CameraPy = 20f;
-		CameraPz = -25f;
+		CameraPz = -15f;
 		CameraRx = 25f;
-		CameraRy = 0f;
+		CameraRy = 0f;*/
 		//起動時に機体の角度を取得しておく
-		RotationA = BodyObject.rotation.eulerAngles;
-		if (RotationA.x > 180)
-			RotationA.x -= 360;
-		if (RotationA.y > 180)
-			RotationA.y -= 360;
-		if (RotationA.z > 180)
-			RotationA.z -= 360;
+		LastRotation = BodyObject.rotation.eulerAngles;
+		if (LastRotation.x > 180)
+			LastRotation.x -= 360;
+		if (LastRotation.y > 180)
+			LastRotation.y -= 360;
+		if (LastRotation.z > 180)
+			LastRotation.z -= 360;
 		//起動時に機体の座標を取得しておく
 		BodyPosition = BodyObject.position;
 		//カメラの位置を機体と同一にする
 		GetComponent<Transform>().position = BodyPosition;
 
-		Setup(RotationA);
+		Setup(LastRotation);
 		//決定された角度にする
 		GetComponent<Transform>().rotation = Quaternion.Euler(CameraRotation);				
 		//決定された位置にカメラを置く
 		GetComponent<Transform>().position = CameraPosition;
 	}
 
-	void Setup(Vector3 RotationD) //引数として現在の機体の角度を扱う
+	void Setup(Vector3 _Rotation) //引数として現在の機体の角度を扱う
 	{
-		//Debug.Log("現在機体角度;"+RotationD);
+		//Debug.Log("現在機体角度;"+_Rotation);
 		//俯瞰時のカメラの角度を決定する
 		CameraRotation = new Vector3(CameraRx, CameraRy, 0f); //絶対的な角度設定を取得
-		CameraRotation.y += RotationD.y;
-		//Debug.Log("機体角度;"+RotationD+", カメラ角度;"+CameraRotation);
+		CameraRotation.y += _Rotation.y;
+		//Debug.Log("機体角度;"+_Rotation+", カメラ角度;"+CameraRotation);
 
 		//俯瞰時のカメラの位置を決定する
 		/* カメラ位置に関するメモ
@@ -92,7 +91,7 @@ public class MainCamera : MonoBehaviour
 		*/
 		
 		//機体のy角を-179.9～180.0の範囲から0.0～359.9の範囲に直しつつ東向きを0度に規定
-		xAdjust = RotationD.y + 270f;
+		xAdjust = _Rotation.y + 270f;
 		if (xAdjust >= 360f)
 			{xAdjust -= 360f;} 
 		xTheta = Mathf.Abs(xAdjust) * Mathf.PI / 180;
@@ -114,14 +113,14 @@ public class MainCamera : MonoBehaviour
 		//カメラをBodyの子オブジェクトにする
 		this.transform.parent = BodyObject;
 		//Bodyの現在の角度を取得する
-		RotationB = BodyObject.rotation.eulerAngles;
-		if (RotationB.x > 180)
-			{RotationB.x -= 360;}
-		if (RotationB.y > 180)
-			{RotationB.y -= 360;}
-		if (RotationB.z > 180)
-			{RotationB.z -= 360;}
-		//Debug.Log("現在機体角度;"+RotationB);
+		NowRotation = BodyObject.rotation.eulerAngles;
+		if (NowRotation.x > 180)
+			{NowRotation.x -= 360;}
+		if (NowRotation.y > 180)
+			{NowRotation.y -= 360;}
+		if (NowRotation.z > 180)
+			{NowRotation.z -= 360;}
+		//Debug.Log("現在機体角度;"+NowRotation);
 
 		//Bodyの現在の座標を取得する
 		BodyPosition = BodyObject.position;
@@ -131,15 +130,14 @@ public class MainCamera : MonoBehaviour
 		switch (CameraMode)
 		{
 		case 0: //俯瞰
-
-			Setup(RotationB);
+			Setup(NowRotation);
 			//Setup()で決定されたカメラの角度と座標へカメラを移動させる
 
 			//カメラの角度を決定
-			RotationC = RotationA - RotationB; //Bodyの前回の角度と現在の角度の差を求める
-			//Debug.Log("機体角度変化量;"+RotationC);
+			DiffRotation = LastRotation - NowRotation; //Bodyの前回の角度と現在の角度の差を求める
+			//Debug.Log("機体角度変化量;"+DiffRotation);
 			//Bodyの角度変化に合わせてCameraの角度を調整 Bodyはxの値が-で上方へ、yの値が-で左へ行く
-			CameraRotation.x += RotationC.x * -0.25f;
+			CameraRotation.x += DiffRotation.x * -0.25f;
 
 			//決定された角度にする
 			GetComponent<Transform>().rotation = Quaternion.Euler(CameraRotation);
@@ -152,9 +150,9 @@ public class MainCamera : MonoBehaviour
 
 		case 1: //主観
 			//Bodyの現在の角度に合わせてCameraの角度を変更
-			CameraRotation.x = RotationB.x * 1f;
-			CameraRotation.y = RotationB.y * 1f;
-			CameraRotation.z = RotationB.z * 1f;
+			CameraRotation.x = NowRotation.x * 1f;
+			CameraRotation.y = NowRotation.y * 1f;
+			CameraRotation.z = NowRotation.z * 1f;
 			//カメラの角度を決定
 			GetComponent<Transform>().rotation = Quaternion.Euler(CameraRotation);
 			
@@ -168,7 +166,7 @@ public class MainCamera : MonoBehaviour
 
 		default: //上記以外
 			CameraMode = 0;
-			Setup(RotationB);
+			Setup(NowRotation);
 			
 			//決定された角度にする
 			GetComponent<Transform>().rotation = Quaternion.Euler(CameraRotation);
@@ -178,7 +176,7 @@ public class MainCamera : MonoBehaviour
 		}
 		
 		//次回に持ち越すため今回の機体の角度を格納
-		RotationA = RotationB;
+		LastRotation = NowRotation;
 	}
 
 }
