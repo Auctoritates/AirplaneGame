@@ -22,4 +22,4 @@ http://blog.livedoor.jp/bribser_dev/archives/4230746.html
 - slackではデジコン(tcu-dc.slack.com)のauctoritatesチャンネルを使用
 
 ## 生存確認
-生きてます
+生き返って開発再開(2017/11/1)
