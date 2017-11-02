@@ -10,15 +10,17 @@ namespace UnityStandardAssets.Vehicles.Aeroplane
         // these max angles are only used on mobile, due to the way pitch and roll input are handled
         public float maxRollAngle = 80;
         public float maxPitchAngle = 80;
+		public float defaultThrottle = 1;
 
         // reference to the aeroplane that we're controlling
         private AeroplaneController m_Aeroplane;
-
+		private float throttle;
 
         private void Awake()
         {
             // Set up the reference to the aeroplane controller.
             m_Aeroplane = GetComponent<AeroplaneController>();
+			throttle = defaultThrottle;
         }
 
 
@@ -30,7 +32,14 @@ namespace UnityStandardAssets.Vehicles.Aeroplane
             bool airBrakes = CrossPlatformInputManager.GetButton("Fire1");
 
             // auto throttle up, or down if braking.
-            float throttle = airBrakes ? -1 : 1;
+            //float throttle = airBrakes ? -1 : 1;
+			if(Input.GetKey(KeyCode.W)){
+				throttle++;
+			}
+			else if(Input.GetKey(KeyCode.S)){
+				throttle--;
+			}
+
 #if MOBILE_INPUT
             AdjustInputForMobileControls(ref roll, ref pitch, ref throttle);
 #endif
