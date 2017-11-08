@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/auctoritates-hanz/Scenes/ModeSelect.unity
+    path: Assets/AirplaneGame/Scenes/ModeSelect.unity
     guid: 183059511a0174d278a9529c4cf185c2
   - enabled: 1
-    path: Assets/auctoritates-hanz/Scenes/scene1.unity
+    path: Assets/AirplaneGame/Scenes/GamePlay.unity
     guid: 12cb06843196bf34f9ba9686e0948b6e
