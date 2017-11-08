@@ -32,5 +32,5 @@ sysinfo.txt
 
 .idea
 .vscode
-/Plugin/Editor/
-/Plugin/Editor.meta
+/Assets/Plugin/Editor/
+/Assets/Plugin/Editor.meta
