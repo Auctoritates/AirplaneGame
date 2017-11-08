@@ -113,7 +113,7 @@ public class MainCamera : MonoBehaviour
 		//俯瞰時のカメラと機体との相対座標を決定する
 		var relativePosition = new Vector3(0, 0, 0)
 		{
-			x = -_Distance * Mathf.Sin(radY),
+			x = -_Distance * Mathf.Sin(radY) * Mathf.Cos(-radX),
 			y = _Distance * Mathf.Sin(radX),
 			z = -_Distance * Mathf.Cos(-radX) * Mathf.Cos(-radY)
 		};
