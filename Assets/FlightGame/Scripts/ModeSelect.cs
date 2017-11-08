@@ -42,7 +42,7 @@ public class ModeSelect : MonoBehaviour
 
 		//初期化
 		_TitleName = "フライト";//このゲームのタイトル名を設定
-		_SceneGame = "Scene1";//ゲーム用のシーンのファイル名(拡張子抜き)
+		_SceneGame = "GamePlay";//ゲーム用のシーンのファイル名(拡張子抜き)
 		_OptionMode = "Option";//オプションオブジェクトの名前 またオプションの合図となる言葉
 		_End = "End";//ゲーム終了用の合図となる言葉
 
