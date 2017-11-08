@@ -9,7 +9,7 @@ public class ModeSelect : MonoBehaviour
 	//変数を宣言
 	//モードセレクト画面のオブジェクト用の変数
 	public string _TitleName = "";//このゲームのタイトル名
-	public string _SceneGame = "";//ゲームシーン用のファイル名
+	public string _SceneGame = "";//ゲームシーンのファイル名
 	private string _OptionMode = "";//オプション用の合図
 	private string _End = "";//ゲーム終了用の合図
 	private GameObject _OptionObject;//オプションオブジェクト
