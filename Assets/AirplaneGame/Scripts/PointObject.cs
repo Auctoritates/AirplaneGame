@@ -3,12 +3,10 @@
 public class PointObject : MonoBehaviour
 {
 	[SerializeField] private int itemScore;
-	private ScoreManeger _scoreManeger;
+	[SerializeField] private GameObject scoreManager;
 
-	public void OnTriggerEnter(Collider other)
-	{
-		_scoreManeger = GetComponent<ScoreManeger>();
-		_scoreManeger.AddScore(itemScore);
+	public void OnTriggerEnter(Collider other) {
+		scoreManager.GetComponent<ScoreManager>().AddScore(itemScore);
 		Destroy(gameObject);
 	}
 }

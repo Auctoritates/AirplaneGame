@@ -107,7 +107,7 @@ public class MainCamera : MonoBehaviour
 			degY -= 360f;		// 360度内に収まらなくても三角関数はも止まるのでここはいらない
 		}*/ 
 		var radY/*旧xTheta*/ = degY * Mathf.Deg2Rad /*= Mathf.Abs(degY) * Mathf.PI / 180*/;
-		var radX = degX * Mathf.Deg2Rad + _OffSet;
+		var radX = degX * Mathf.Deg2Rad + _OffSet / 100;
 		//Debug.Log("調整後機体x角;"+xAdjust+", xTheta=ラジアン換算;"+xTheta+", Cos(xTheta);"+Mathf.Cos(xTheta)+", Sin(xTheta);"+Mathf.Sin(xTheta));
 
 		//俯瞰時のカメラと機体との相対座標を決定する

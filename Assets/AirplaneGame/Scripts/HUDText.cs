@@ -1,18 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class HUDText : MonoBehaviour {
+	[SerializeField] private Text throtolText;
+	[SerializeField] private Text scoreText;
 
-	public Text throtol;
-	// Use this for initialization
-	void Start () {
-		//throtol = this.GetComponent<Text> ();
+	private void Start ()
+	{
+		throtolText = GetComponent<Text> ();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		throtol.text = "スロットル:";
+
+	public void UpdateScoreText(int score)
+	{
+		scoreText.text = "Score:" + score + "P";
+	}
+
+	public void UpdateThrotolText()
+	{
+		throtolText.text = "スロットル:";
 	}
 }
