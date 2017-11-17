@@ -78,11 +78,11 @@ public class GoalManager : MonoBehaviour
 		//機体がゴールオブジェクトの上空にいた場合
 		if (_GoalMaxX > _BodyPosition.x && _BodyPosition.x > _GoalMinX)
 		{
-			Debug.Log("X範囲内到達");
+			//Debug.Log("X範囲内到達");
 			if (_GoalMaxZ > _BodyPosition.z && _BodyPosition.z > _GoalMinZ)
 			{
-				Debug.Log("Z範囲内到達");
-				Debug.Log("Clear!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				//Debug.Log("Z範囲内到達");
+				//Debug.Log("Clear!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				Time.timeScale = 0;
 				_GoalUI.SetActive(true);
 			}
