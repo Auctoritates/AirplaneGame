@@ -2,16 +2,11 @@
 
 public class ScoreManeger : MonoBehaviour
 {
-	private int score;
+	private static int score;
 
-	public void Start()
+	public static void AddScore(int plusScore)
 	{
-		score = 0;
-	}
-
-	public void AddScore(int plusScore)
-	{
+		Debug.Log("test");
 		score += plusScore;
-		Debug.Log(score);
 	}
 }
