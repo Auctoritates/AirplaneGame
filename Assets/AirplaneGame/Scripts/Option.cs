@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,18 +12,23 @@ public class Option : MonoBehaviour
 	[SerializeField] private string _ModeSelectScene = ""; //「タイトルに戻る」で用いるモードセレクト用のシーン名
 	private string _Volume = "";//ボリューム設定用の合図
 	private string _End = "";//オプション終了用の合図
-	public bool _IsOptionNow = false;//true=オプションメニュー,false=モードセレクトメニュー
-	private bool _IsRegular;//trueなら正常、falseならUpdateを作動させない
+	public bool _IsOptionNow = false;//true=オプションメニュー起動許可有り,false=オプションメニュー起動許可無し
+	public int _ModeNow = 0;//0=タイトル画面,1=操縦中,2=その他
+//	private bool _IsRegular;//trueなら正常、falseならUpdateを作動させない
+//	[SerializeField] private GameObject _ModeSelectObject;//ゲーム起動直後のシーンのModeSelectオブジェクト
 	[SerializeField] private GameObject _VolumeButton;//ボリュームボタンオブジェクト
 	[SerializeField] private GameObject _TitleButton;//タイトルへ戻るボタンオブジェクト
 	private Text _OptionText;//オプション用テキスト(最前)読込方法が特殊なためSerializeFieldは使わない
+	private float _BGMVolume = 0f;//BGMの音量
+	private float _SEVolume = 0f;//SEの音量
+	private float _VolumeChange = 0f;//音量の変動量
 	
 	//カーソル移動に関する変数
 	private GameObject _ButtonSelected;//現在選択されているボタンのオブジェクト
 	private Color _Bright = Color.clear;//選択されているボタン用の明るい色
 	private Color _Pale = Color.clear;//選択されていないボタン用の透明度の低い色
 	private Color _Pressed = Color.clear;//決定されたボタン用のやや暗い色
-	public int _TimeAfterSelectOption = 0;//前回のカーソル移動後の経過時間
+	private int _TimeAfterSelectOption = 0;//前回のカーソル移動後の経過時間
 	private int _Interval = 0;//カーソル移動後、再びカーソル移動を受け付けるまでの時間設定
 	private int _Selected = 0;//現在選択中の選択肢の番号
 	private int _HowMany = 0;//選択肢の総数
@@ -36,71 +42,197 @@ public class Option : MonoBehaviour
 	private ColorBlock _TmpColorBlock;//一時的なボタンオブジェクトのボタンコンポーネントのカラーブロック
 	private Image _TmpImage;//一時的なオブジェクトのイメージコンポーネント
 
-	// Use this for initialization
-	void Start()
+	void Awake ()//シーン遷移後もオプションオブジェクトを残せるように設定する
 	{
-
-		//初期画面オブジェクトの情報を取得する
-/*		_StartMenuObject = GameObject.Find("ModeSelect");
-		_StartMenuScript = _StartMenuObject.GetComponent<ModeSelect>();
-*/
-/*
-		_TimeAfterSelectOption = _StartMenuScript._TimeAfterSelectStartMenu;
-		Debug.Log("カーソル待機:"+_TimeAfterSelectOption);
-*/
-		
+		DontDestroyOnLoad (gameObject);//オブジェクトを消去させないようにする
 	}
-
 	void OnEnable () 
 	{
-			
 		//オプション用の選択肢の個数を数える。Tag名は"OptionButton"
 		//_HowMany = GameObject.FindGameObjectsWithTag("OptionButton").Length;
 		_HowMany = 2;//暫定的な処理
 		Debug.Log("選択肢個数="+_HowMany);
-
+		
 		if(_IsOptionNow)
 		{
-//		_StartMenuObject.SetActive(false);
+			//現在選択されているボタンに応じてボタンのカラーを変更する
+			OnButton(_VolumeButton);
+			OffButton(_TitleButton);
 
-		//現在選択されているボタンに応じてボタンのカラーを変更する
-		OffButton(_VolumeButton);
-		OffButton(_TitleButton);
-		
-		//文字列を初期化
-		_OptionName = "オプション";//このゲームのタイトル名を設定
-		_Volume = "Volume";//ボリューム設定用の合図となる言葉
-		_End = "Title";//タイトルに戻る用の合図となる言葉
-		
-		//変数を初期化
-		_Selected = 1;//選択肢番号は1～_HowManyまでの値であれば初期化しない
-		_ButtonSelected = _VolumeButton;
-		_TimeAfterSelectOption = 0;
-		_Interval = 30 + 1;//目的の値に+1する
-		_Bright = Color.white;//全ての値が1f(FF)、つまりFFFFFFFF、はっきりした白色
-		_Pale = new Color(0.5f, 1f, 0.5f, 0.5f);//透明度のみ0.5f、薄い白色
-		_Pressed = new Color(0.8f, 0.8f, 0.8f, 1f);//やや暗い白
-		
-		//ModeSelectシーン名を設定する
-		_ModeSelectScene = "ModeSelect";
+			//変数の初期値を設定する
+			SetDefalut();
 
-		//変数にオブジェクトを代入
-		_TmpObject = GameObject.Find("OptionText");
-		_OptionText = _TmpObject.GetComponent<Text>();//タイトルテキストオブジェクトのテキストコンポーネントを取得
-		_OptionText.text = _OptionName;//.textは小文字限定という初見お断り仕様
-		//オプションメニューの透明度を戻す
-		MenuStart();
-		BreakTime(true);//問答無用でウェイトを掛ける
-		_IsMovedNow = true;
+			//オプションメニューの透明度を戻す
+			MenuStart();
+
+			//問答無用でウェイトを掛ける
+			_IsMovedNow = true;
+			BreakTime(_IsMovedNow);
 		}
 	}
-	
 	// Update is called once per frame
 	void Update () 
 	{
 		OffButton(_VolumeButton);
 		OffButton(_TitleButton);
+		DecideButton();
 
+		//カーソル移動受付/ウェイト処理
+		if (_TimeAfterSelectOption > 0)
+		{
+			//前回カーソル移動が成されていた場合ウェイトを掛ける
+			BreakTime(_IsMovedNow);			
+		}
+		else
+		{
+			//キャンセルキー入力を受け付ける
+			if (Input.GetButton("Cancel"))
+			{
+				if(_ModeNow == 0)//タイトル画面中の起動なら
+				{
+					//ModeSelectシーンへ戻る
+					Debug.Log("タイトルへ戻る");
+					_Code = _End;
+					Action();
+				}
+				else if(_ModeNow == 1)//ゲーム中なら
+				{
+					gameObject.SetActive(false);//このオプションオブジェクトを非アクティブ化
+				}
+			}
+			else if(Input.GetButton("Submit"))//決定キー入力を受け付ける
+			{
+				//対象のボタンの色を変更する
+				ClickButton(_ButtonSelected);
+				//決定かクリックされたボタンに応じて処理を行う
+				Action();
+			}		
+			else if (_TimeAfterSelectOption == 0)//カーソル移動の判定
+			{
+				/*上下カーソル移動*/
+				//選択キー入力の結果に応じて選択中のボタンIDを変更する
+				if (Input.GetAxis("Vertical") > 0.3)
+				{
+					//上
+					//Debug.Log("上:Vertical > 0");
+					_Selected += -1;
+					//Debug.Log("選択中の選択肢ID:"+_Selected);
+					_IsMovedNow = true;
+					_TimeAfterSelectOption = 1;
+				}
+				else if (Input.GetAxis("Vertical") < -0.3)
+				{
+					//下
+					//Debug.Log("下:Vertical < 0");
+					_Selected += 1;
+					//Debug.Log("選択中の選択肢ID:"+_Selected);
+					_IsMovedNow = true;
+					_TimeAfterSelectOption = 1;
+				}
+
+				//選択中のボタンIDの上限と下限を設け、超えていた場合逆の閾値にする
+				if (_Selected < 1)
+				{
+					_Selected = _HowMany;
+					//Debug.Log("選択中の選択肢ID:"+_Selected);
+				}
+				else if (_Selected > _HowMany)
+				{
+					_Selected = 1;
+					//Debug.Log("選択中の選択肢ID:"+_Selected);
+				}
+
+				if(_Code == _Volume)
+				{
+					VolumeChange();
+				}
+			}
+		}
+	}
+
+/*
+	void DitectIrregular()
+	{
+		//不都合な状況であればfalseを返してUpdateを停止させる
+		_IsRegular = true;
+		
+		//1.現在の選択肢個数が1未満
+		if(1 > _HowMany)
+		{
+			_IsRegular = false;
+			//Debug.Log("選択肢数が1未満の為中断");
+		}
+	}
+*/
+	void MenuStart()//現在の選択中の番号の上限と下限を設定する。
+	{
+		if(1 > _Selected)//選択中ボタン番号の上限下限設定
+			_Selected = 1;
+		else if(_Selected > _HowMany)
+			_Selected = _HowMany;
+	}
+	
+	void MenuOff()
+	{
+		//オプションメニューUIオブジェクトを非アクティブにする
+		gameObject.SetActive(false);//このオプションオブジェクトを非アクティブ化
+	}
+	
+	//決定されたゲームオブジェクトのボタンコンポーネント及びイメージコンポーネントの各種colorを_Pressedにする
+	void ClickButton(GameObject _TmpObject)
+	{
+		//Debug.Log("ClickButton");
+		_PointingButton = _TmpObject.GetComponent<Button>();
+		_TmpColorBlock = _PointingButton.colors;
+		_TmpColorBlock.normalColor = _Pressed;
+		_TmpColorBlock.highlightedColor = _Pressed;
+		_TmpColorBlock.pressedColor = _Pressed;
+		_PointingButton.colors = _TmpColorBlock;
+
+		_TmpImage = _PointingButton.GetComponent<Image>();
+		_TmpImage.color = _Pressed;
+	}
+
+	void BreakTime(bool _IsPushed)//_Interval分のウェイトが経過していたらウェイトを解除し、それ以外ではウェイトを発生させる
+	{
+		if (_IsPushed)
+		{
+			//Debug.Log("カーソル操作ウェイト");	
+			if (_TimeAfterSelectOption >= _Interval)
+			{
+				_IsPushed = false;
+				_TimeAfterSelectOption = 0;
+				return;
+			}
+			else
+			{
+				_TimeAfterSelectOption += 1;
+			}
+		}
+	}
+
+	//決定キーが押された後の処理を行う
+	void Action()
+	{
+		if (_Code == _End)
+		{
+			//タイトルに戻る
+			Debug.Log("タイトルに戻る");
+			gameObject.SetActive(false);//このオプションオブジェクトを非アクティブ化
+
+			if(_ModeNow == 0)
+			{
+				_IsOptionNow = false;
+			}
+			else if (_ModeNow == 1)
+			{
+				SceneManager.LoadScene(_ModeSelectScene);
+			}
+		}
+	}
+
+	void DecideButton()//現在選択されているボタンのみを光らせる
+	{
 		/*オプションの項目
 		1.音量変更
 		2.
@@ -126,124 +258,29 @@ public class Option : MonoBehaviour
 				break;
 		}
 		OnButton(_ButtonSelected);
-		
-		if (_TimeAfterSelectOption > 0)
-		{
-			//前回カーソル移動が成されていた場合ウェイトを掛ける
-			BreakTime(_IsMovedNow);			
-		}
-		else
-		{			
-			//キャンセルキー入力を受け付ける
-			if (Input.GetButton("Cancel"))
-			{
-				if(true)//タイトル画面からの派生なら
-				{
-					//ModeSelectシーンへ戻る
-					Debug.Log("タイトルへ戻る");
-					_Code = _End;
-					Action();
-				}
-				else//ゲーム中なら
-				{
-					gameObject.SetActive(false);//このオプションオブジェクトを非アクティブ化
-					//MenuOff();
-				}
-			}
-			//決定キー入力を受け付ける
-			if(Input.GetButton("Submit"))
-			{
-				//対象のボタンの色を変更する
-				ClickButton(_ButtonSelected);
-				//決定かクリックされたボタンに応じて処理を行う
-				Action();
-			}		
-			//カーソル移動の判定
-			if (_TimeAfterSelectOption == 0)
-			{
-				/*上下カーソル移動*/
-				//選択キー入力の結果に応じて選択中のボタンIDを変更する
-				if (Input.GetAxis("Vertical") > 0)
-				{
-					//上
-					//Debug.Log("上:Vertical > 0");
-					_Selected += -1;
-					//Debug.Log("選択中の選択肢ID:"+_Selected);
-					_IsMovedNow = true;
-					_TimeAfterSelectOption = 1;
-				}
-				else if (Input.GetAxis("Vertical") < 0)
-				{
-					//下
-					//Debug.Log("下:Vertical < 0");
-					_Selected += 1;
-					//Debug.Log("選択中の選択肢ID:"+_Selected);
-					_IsMovedNow = true;
-					_TimeAfterSelectOption = 1;
-				}
-
-				//選択中のボタンIDの上限と下限を設け、超えていた場合逆の閾値にする
-				if (_Selected < 1)
-				{
-					_Selected = _HowMany;
-					//Debug.Log("選択中の選択肢ID:"+_Selected);
-				}
-				else if (_Selected > _HowMany)
-				{
-					_Selected = 1;
-					//Debug.Log("選択中の選択肢ID:"+_Selected);
-				}
-
-			
-				/*左右カーソル移動*/
-				if (Input.GetAxis("Horizontal") > 0)
-				{
-					//右
-					//Debug.Log("右:Horizontal > 0");
-					_IsMovedNow = true;
-					_TimeAfterSelectOption = 1;
-				}
-				else if (Input.GetAxis("Horizontal") < 0)
-				{
-					//左
-					//Debug.Log("左:Horizontal < 0");
-					_IsMovedNow = true;
-					_TimeAfterSelectOption = 1;
-				}
-			}
-		}
-	}
-
-	void DitectIrregular()
-	{
-		//不都合な状況であればfalseを返してUpdateを停止させる
-		_IsRegular = true;
-		
-		//1.現在の選択肢個数が1未満
-		if(1 > _HowMany)
-		{
-			_IsRegular = false;
-			//Debug.Log("選択肢数が1未満の為中断");
-		}
-	}
-
-	void MenuStart()
-	{
-		//メニューUIオブジェクトをアクティブにし、非透明度を255にする。
-		//さらに現在の選択中の番号の上限と下限を設定する。
-		
-		if(1 > _Selected)//選択中ボタン番号の上限下限設定
-			_Selected = 1;
-		else if(_Selected > _HowMany)
-			_Selected = _HowMany;
 	}
 	
-	void MenuOff()
-	{
-		//メニューUIオブジェクトを非透明度を0にし、非アクティブにする
-//		_TimeAfterSelectOption = 1;//選択後のウェイトを設定
-//		_StartMenuObject.SetActive(true);//オプションオブジェクトをアクティブ化
-		gameObject.SetActive(false);//このオプションオブジェクトを非アクティブ化
+	void VolumeChange()//音量の変更を受け付ける
+	{		
+		/*左右カーソル移動判定*/
+		if (Input.GetAxis("Horizontal") > 0.3)
+		{
+			//右
+			_IsMovedNow = true;
+			_TimeAfterSelectOption = 1;
+			_BGMVolume += _VolumeChange;
+			_SEVolume += _VolumeChange;
+			SetVolume();
+		}
+		else if (Input.GetAxis("Horizontal") < -0.3)
+		{
+			//左
+			_IsMovedNow = true;
+			_TimeAfterSelectOption = 1;
+			_BGMVolume -= _VolumeChange;
+			_SEVolume -= _VolumeChange;
+			SetVolume();
+		}
 	}
 
 	//指定されているボタンを明るくする
@@ -260,6 +297,33 @@ public class Option : MonoBehaviour
 		_TmpImage = _PointingButton.GetComponent<Image>();
 		_TmpImage.color = _Bright;
 	}	
+	void SetDefalut()//各変数の初期値を設定する
+	{
+		//文字列を初期化
+		_OptionName = "オプション";//このゲームのタイトル名を設定
+		_Volume = "Volume";//ボリューム設定用の合図となる言葉
+		_End = "Title";//タイトルに戻る用の合図となる言葉
+	
+		//変数を初期化
+		_Selected = 1;//選択肢番号は1～_HowManyまでの値であれば初期化しない
+		_ButtonSelected = _VolumeButton;
+		_TimeAfterSelectOption = 0;
+		_Interval = 23 + 1;//目的の値に+1する
+		_Bright = Color.white;//全ての値が1f(FF)、つまりFFFFFFFF、はっきりした白色
+		_Pale = new Color(0.5f, 1f, 0.5f, 0.5f);//透明度のみ0.5f、薄い白色
+		_Pressed = new Color(0.8f, 0.8f, 0.8f, 1f);//やや暗い白
+		_BGMVolume = 50f;
+		_SEVolume = 50f;
+		_VolumeChange = 25f;//音量の変動量
+		
+		//ModeSelectシーン名を設定する
+		_ModeSelectScene = "ModeSelect";
+
+		//変数にオブジェクトを代入
+		_TmpObject = GameObject.Find("OptionText");
+		_OptionText = _TmpObject.GetComponent<Text>();//タイトルテキストオブジェクトのテキストコンポーネントを取得
+		_OptionText.text = _OptionName;//.textは小文字限定という初見お断り仕様
+	}
 	//指定されていないゲームオブジェクトのボタンコンポーネント及びイメージコンポーネントを薄いカラーにする
 	void OffButton(GameObject _TmpObject)
 	{
@@ -274,51 +338,23 @@ public class Option : MonoBehaviour
 		_TmpImage = _PointingButton.GetComponent<Image>();
 		_TmpImage.color = _Pale;
 	}
-	
-	//決定されたゲームオブジェクトのボタンコンポーネント及びイメージコンポーネントの各種colorを_Pressedにする
-	void ClickButton(GameObject _TmpObject)
-	{
-		//Debug.Log("ClickButton");
-		_PointingButton = _TmpObject.GetComponent<Button>();
-		_TmpColorBlock = _PointingButton.colors;
-		_TmpColorBlock.normalColor = _Pressed;
-		_TmpColorBlock.highlightedColor = _Pressed;
-		_TmpColorBlock.pressedColor = _Pressed;
-		_PointingButton.colors = _TmpColorBlock;
 
-		_TmpImage = _PointingButton.GetComponent<Image>();
-		_TmpImage.color = _Pressed;
-	}
-
-	void BreakTime(bool _IsPushed)
+	void SetVolume()//変更した音量を格納する
 	{
-		//カーソル移動や選択が成された後に呼び出され、ウェイトをかける
-		if (_IsPushed)
-		{
-			//Debug.Log("カーソル操作ウェイト");	
-			if (_TimeAfterSelectOption >= _Interval)
-			{
-				_IsPushed = false;
-				_TimeAfterSelectOption = 0;
-				return;
-			}
-			else
-			{
-				_TimeAfterSelectOption += 1;
-			}
+		Math.Floor(_BGMVolume);
+		Math.Floor(_SEVolume);
+		if(0f > _BGMVolume || 0f > _SEVolume)
+		{	
+			_BGMVolume = 0f;
+			_SEVolume = 0f;
 		}
-	}
-
-	//決定キーが押された後の処理を行う
-	void Action()
-	{
-		if (_Code == _End)
+		else if(_BGMVolume > 100f || _SEVolume > 100f)
 		{
-			//タイトルに戻る
-			Debug.Log("タイトルに戻る");
-			_IsOptionNow = false;
-			gameObject.SetActive(false);//このオプションオブジェクトを非アクティブ化
+			_BGMVolume = 100f;
+			_SEVolume = 100f;
 		}
+		Debug.Log(":音量:"+_BGMVolume);
+		AudioManager.Instance.ChangeVolume(_BGMVolume/100f, _SEVolume/100f);
 	}
-	
 }
+

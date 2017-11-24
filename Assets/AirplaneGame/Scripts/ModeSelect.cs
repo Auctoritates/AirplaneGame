@@ -8,6 +8,7 @@ public class ModeSelect : MonoBehaviour
 {
 	//変数を宣言
 	//モードセレクト画面のオブジェクト用の変数
+	//Option _OptionScript;//オプションメニューUI総合オブジェクトのスクリプト
 	Option _OptionScript;//オプションメニューUI総合オブジェクトのスクリプト
 	[SerializeField] private string _TitleName = "";//このゲームのタイトル名
 	[SerializeField] private string _SceneGame = "";//ゲームシーンのファイル名
@@ -44,37 +45,10 @@ public class ModeSelect : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		_IsOptionNow = false;
-		_IsMenuOK = false;
-		//オブジェクトの色を設定
-		_BlueBack = new Color(2f/255f, 201f/255f, 253f/255f, 255f/255f);//Colorの値は0～1の値に設定する。
-		_TextColor = new Color(50f/255f,50f/255f,50f/255f,255f/255f);
-		//Optionオブジェクトの情報取得
-		_OptionObject = GameObject.Find("Option");
-		_OptionScript = _OptionObject.GetComponent<Option>();
-		_OptionObject.SetActive(false);
-
-
-		//初期化
-		_TitleName = "フライト";//このゲームのタイトル名を設定
-		_SceneGame = "GamePlay";//ゲーム用のシーンのファイル名(拡張子抜き)
-		_OptionMode = "Option";//オプションオブジェクトの名前 またオプションの合図となる言葉
-		_End = "End";//ゲーム終了用の合図となる言葉
-		//UIオブジェクトを取得
-		//キャンバス内のUIパーツの詳細はコンポーネント扱い
-		//タイトルテキストの内容を書き換える
-		_TmpObject = GameObject.Find("TitleText");
-		_TitleText = _TmpObject.GetComponent<Text>();//タイトルテキストオブジェクトのテキストコンポーネントを取得
-		_TitleText.text = _TitleName;//.textは小文字限定という初見お断り仕様
-		
-		//カーソル移動に関する変数を初期化
-		_SelectedNumber = 0;//現在選択中のボタンをスタートボタンに設定
-		_ButtonSelected = _StartButton;
-		_Interval = 30 + 1;//目的の値に+1する
-		_TimeAfterSelectStartMenu = 0;
-		_Bright = Color.white;//全ての値が1f(FF)、つまりFFFFFFFF、はっきりした白色
-		_Pale = new Color(0.5f, 1f, 0.5f, 0.5f);//透明度のみ0.5f、薄い白色
-		_Pressed = new Color(0.8f, 0.8f, 0.8f, 1f);//やや暗い白
+		SetDefalut();
+		OffButton(_OptionButton);
+		OffButton(_EndButton);
+		OnButton(_StartButton);
 	}
 	
 	// Update is called once per frame
@@ -145,7 +119,7 @@ public class ModeSelect : MonoBehaviour
 					if (_TimeAfterSelectStartMenu == 0)
 					{
 						//選択キー入力の結果に応じて選択中のボタンIDを変更する
-						if (Input.GetAxis("Vertical") > 0)
+						if (Input.GetAxis("Vertical") > 0.3)
 						{
 							//上
 							//Debug.Log("上:Vertical < 0");
@@ -153,7 +127,7 @@ public class ModeSelect : MonoBehaviour
 							_IsMovedNow = true;
 							_TimeAfterSelectStartMenu = 1;
 						}
-						else if (Input.GetAxis("Vertical") < 0)
+						else if (Input.GetAxis("Vertical") < -0.3)
 						{
 							//下
 							_SelectedNumber += 1;
@@ -218,7 +192,7 @@ public class ModeSelect : MonoBehaviour
 		//Debug.Log("ClearButton");
 		_TmpObject.SetActive(false);
 	}
-	
+
 	void OnButton (GameObject _TmpObject)
 	{
 		//Debug.Log("OnButton");
@@ -305,8 +279,44 @@ public class ModeSelect : MonoBehaviour
 		}
 		else if (_Code != "")
 		{
+			//オプションスクリプトのモード変数を操縦中の値に変える
+			_OptionScript._ModeNow = 1;
 			//指定されたシーンを読み込む
 			SceneManager.LoadScene(_Code);
 		}
+	}
+	void SetDefalut() //変数の初期化を行う
+	{
+		_IsOptionNow = false;
+		_IsMenuOK = false;
+		//オブジェクトの色を設定
+		_BlueBack = new Color(2f/255f, 201f/255f, 253f/255f, 255f/255f);//Colorの値は0～1の値に設定する。
+		_TextColor = new Color(50f/255f,50f/255f,50f/255f,255f/255f);
+		//Optionオブジェクトの情報取得
+		_OptionObject = GameObject.Find("Option");
+		_OptionScript = _OptionObject.GetComponent<Option>();
+		_OptionScript._ModeNow = 0;
+		_OptionObject.SetActive(false);
+
+		//初期化
+		_TitleName = "フライト";//このゲームのタイトル名を設定
+		_SceneGame = "GamePlay";//ゲーム用のシーンのファイル名(拡張子抜き)
+		_OptionMode = "Option";//オプションオブジェクトの名前 またオプションの合図となる言葉
+		_End = "End";//ゲーム終了用の合図となる言葉
+		//UIオブジェクトを取得
+		//キャンバス内のUIパーツの詳細はコンポーネント扱い
+		//タイトルテキストの内容を書き換える
+		_TmpObject = GameObject.Find("TitleText");
+		_TitleText = _TmpObject.GetComponent<Text>();//タイトルテキストオブジェクトのテキストコンポーネントを取得
+		_TitleText.text = _TitleName;//.textは小文字限定という初見お断り仕様
+		
+		//カーソル移動に関する変数を初期化
+		_SelectedNumber = 0;//現在選択中のボタンをスタートボタンに設定
+		_ButtonSelected = _StartButton;
+		_Interval = 23 + 1;//目的の値に+1する
+		_TimeAfterSelectStartMenu = 0;
+		_Bright = Color.white;//全ての値が1f(FF)、つまりFFFFFFFF、はっきりした白色
+		_Pale = new Color(0.5f, 1f, 0.5f, 0.5f);//透明度のみ0.5f、薄い白色
+		_Pressed = new Color(0.8f, 0.8f, 0.8f, 1f);//やや暗い白
 	}
 }
