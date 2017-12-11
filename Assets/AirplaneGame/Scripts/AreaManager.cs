@@ -17,8 +17,8 @@ public class AreaManager : MonoBehaviour {
 
 	//エフェクト用の変数
 	//[SerializeField] private Image _Alert1;
-	private Color _WarningColor;
-	private Color _Clear;
+//	private Color _WarningColor;
+//	private Color _Clear;
 
 	// Use this for initialization
 	void Start () 
@@ -55,8 +55,8 @@ public class AreaManager : MonoBehaviour {
 		
 		_RangeState = 0;
 		
-		_Clear = Color.clear;
-		_WarningColor = new Vector4(1f, 0.4f, 0.4f);
+//		_Clear = Color.clear;
+//		_WarningColor = new Vector4(1f, 0.4f, 0.4f);
 	}
 
 	void OutDetect() //場外逸脱を検出
