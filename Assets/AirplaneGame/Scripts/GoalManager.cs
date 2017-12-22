@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GoalManager : MonoBehaviour 
 {
 	//public bool _GoalMode = false; //
+	ResultManager _ResultManagerScript;
 	public GameObject _BodyObject; //機体オブジェクトを登録する場所を作る
 	public GameObject _GoalObject; //ゴールオブジェクトを登録する場所を作る
 	public GameObject _GoalUI; //ゴール時に表示するエフェクトのUIを登録する場所を作る
@@ -65,7 +66,6 @@ public class GoalManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		//機体の座標を取得する
 		_BodyPosition = _BodyObject.GetComponent<Transform>().position;
 
 		//デバッグ文
@@ -82,10 +82,25 @@ public class GoalManager : MonoBehaviour
 			if (_GoalMaxZ > _BodyPosition.z && _BodyPosition.z > _GoalMinZ)
 			{
 				//Debug.Log("Z範囲内到達");
-				//Debug.Log("Clear!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				Time.timeScale = 0;
-				_GoalUI.SetActive(true);
+				GoalEffect();
+				if (Input.GetButton("Submit"))
+				{
+					EffectOff();
+				}
 			}
 		}
+	}
+	
+	void GoalEffect()
+	{
+		//Debug.Log("Clear!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		Time.timeScale = 0.5f;
+		_GoalUI.SetActive(true);		
+	}
+
+	void EffectOff()
+	{
+		_GoalUI.SetActive(false);
+		_ResultManagerScript._IsResultOK = true;
 	}
 }
