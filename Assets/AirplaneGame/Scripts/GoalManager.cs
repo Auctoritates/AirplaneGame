@@ -5,20 +5,26 @@ using UnityEngine.UI;
 
 public class GoalManager : MonoBehaviour 
 {
-	//public bool _GoalMode = false; //
+	[SerializeField] private int _GoalMode;
+	[SerializeField] private GameObject _BodyObject; //機体オブジェクトを登録する場所を作る
+	[SerializeField] private GameObject _GoalObject; //ゴールオブジェクトを登録する場所を作る
+	[SerializeField] private GameObject _GoalUI; //ゴール時に表示するエフェクトのUIを登録する場所を作る
+	private GameObject _ResultManager;
 	ResultManager _ResultManagerScript;
-	public GameObject _BodyObject; //機体オブジェクトを登録する場所を作る
-	public GameObject _GoalObject; //ゴールオブジェクトを登録する場所を作る
-	public GameObject _GoalUI; //ゴール時に表示するエフェクトのUIを登録する場所を作る
-	public Image _GBImage; //クリア時の演出イメージ背景黒
-	public Image _GWImage; //クリア時の演出イメージ背景白
-	public Text _GText; //クリア時の描画メッセージテキスト
+
+	[SerializeField] private Image _GBImage; //クリア時の演出イメージ背景黒
+	[SerializeField] private Image _GWImage; //クリア時の演出イメージ背景白
+	[SerializeField] private Text _GText; //クリア時の描画メッセージテキスト
+	private Image _TmpImage;
+	private Text _TmpText;
 	private Vector3 _BodyPosition = Vector3.zero; //機体の現在の位置を格納する変数
 	private Vector3 _GoalPosition = Vector3.zero; //ゴールの現在の位置を格納する変数
 	private Vector3 _GoalScale = Vector3.zero; //ゴールの現在の大きさを格納する変数
 	private Color _GBImageColor = Vector4.zero;
 	private Color _GWImageColor = Vector4.zero;
 	private Color _GTColor = Vector4.zero;
+	private Color _TmpColor = Vector4.zero;
+	private int _WaitCount;
 	private float _PlaneBaseSizeX = 0f;
 	private float _PlaneBaseSizeZ = 0f;	
 	private float _GoalMinX = 0f;
@@ -32,9 +38,17 @@ public class GoalManager : MonoBehaviour
 	{
 		//デバッグモードをオフにする
 		//_DebugMode = false; 
+		_WaitCount = 0;
+		
+		_ResultManager = GameObject.Find("ResultManager");
+		_ResultManagerScript = _ResultManager.GetComponent<ResultManager>();
+		_GoalMode = 0;
 
-		//ゴールUIの透明度を戻したうえで非アクティブにする
+/*		//ゴールUIの透明度を戻したうえで非アクティブにする
 		_Alpha = 255f;
+		AppearImage(_GBImage);
+		AppearImage(_GWImage);
+		AppearText(_GText);
 		_GBImageColor = _GBImage.GetComponent<Image>().color;
 		_GBImageColor.a = _Alpha;
 		_GBImage.GetComponent<Image>().color = _GBImageColor;
@@ -44,6 +58,7 @@ public class GoalManager : MonoBehaviour
 		_GTColor = _GText.GetComponent<Text>().color;
 		_GTColor.a = _Alpha;
 		_GText.GetComponent<Text>().color = _GTColor;
+*/
 		
 		//_WhiteImage.GetComponent<Image>().color.a = _Alpha;
 		//_GoalText.GetComponent<Text>().color.a = _Alpha;
@@ -76,31 +91,112 @@ public class GoalManager : MonoBehaviour
 		//Debug.Log("ゴール範囲Z："+_GoalMinZ+"～"+_GoalMaxZ);
 
 		//機体がゴールオブジェクトの上空にいた場合
-		if (_GoalMaxX > _BodyPosition.x && _BodyPosition.x > _GoalMinX)
+		if (_GoalMode == 0)
 		{
-			//Debug.Log("X範囲内到達");
-			if (_GoalMaxZ > _BodyPosition.z && _BodyPosition.z > _GoalMinZ)
+			if (_GoalMaxX > _BodyPosition.x && _BodyPosition.x > _GoalMinX)
 			{
-				//Debug.Log("Z範囲内到達");
-				GoalEffect();
-				if (Input.GetButton("Submit"))
+				//Debug.Log("X範囲内到達");
+				if (_GoalMaxZ > _BodyPosition.z && _BodyPosition.z > _GoalMinZ)
 				{
-					EffectOff();
+					//Debug.Log("Z範囲内到達");
+					Goal();
 				}
 			}
 		}
+		else
+		{
+			//既にゴールしているなら
+			Goal();
+		}
+	}
+	void AppearImage(Image _TmpImage)
+	{
+		_TmpColor = _TmpImage.GetComponent<Image>().color;
+		_TmpColor.a = _Alpha;
+		_TmpImage.GetComponent<Image>().color = _TmpColor;		
+	}
+	void AppearText(Text _TmpText)
+	{
+		_TmpColor = _TmpText.GetComponent<Text>().color;
+		_TmpColor.a = _Alpha;
+		_TmpText.GetComponent<Text>().color = _TmpColor;
 	}
 	
-	void GoalEffect()
+	void GoalEffect1()//時間をスローにする
 	{
 		//Debug.Log("Clear!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		Time.timeScale = 0.5f;
-		_GoalUI.SetActive(true);		
+		Time.timeScale = 0.1f;
+		_GoalUI.SetActive(true);	
+	}
+	void GoalEffect2()//段々とゴールUIを表示する
+	{
+		AppearImage(_GBImage);
+		AppearImage(_GWImage);
+		AppearText(_GText);
 	}
 
 	void EffectOff()
 	{
+		Debug.Log("ゴール画面終了");
 		_GoalUI.SetActive(false);
 		_ResultManagerScript._IsResultOK = true;
+	}
+	
+	void Goal()
+	{
+		switch (_GoalMode)
+		{
+			case 0://ゴール直後
+				_GoalMode++;
+				break;
+			case 1://ゴール後
+				if (_WaitCount == 0)
+				{
+					_Alpha = 0f;
+					GoalEffect1();
+					GoalEffect2();
+					_WaitCount++;
+				}
+				else if (_WaitCount > 255)
+				{
+					Debug.Log("スロー終了");
+					_GoalMode++;
+				}
+				else if (_Alpha < 1f)
+				{
+					Debug.Log("追加");
+					_Alpha += 1f/255f;
+					GoalEffect2();
+					_WaitCount++;	
+				}
+				else
+				{
+					Debug.Log("表示終了");
+					_WaitCount++;
+				}
+				break;
+			case 2://ゴール後エフェクト描画済み
+				if (Input.GetButton("Submit"))
+				{	
+					EffectOff();
+					_GoalMode++;
+					_WaitCount = 0;
+					_ResultManagerScript._IsResultOK = true;
+				}
+				break;
+			case 3://ゴール後エフェクト撤去済み
+				//リザルト画面を描画する時間を稼ぐ
+				_WaitCount++;
+				if (_WaitCount > 60)
+				{
+					_GoalMode++;
+				}
+				break;
+			case 4:
+					_ResultManagerScript._IsEndOK = true;
+					break;				
+			default:
+				break;
+		}
 	}
 }

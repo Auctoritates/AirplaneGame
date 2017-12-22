@@ -430,6 +430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 920bc3825ac3d194f87f8c6667ee7540, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _GoalMode: 0
   _BodyObject: {fileID: 0}
   _GoalObject: {fileID: 1706661172850416}
   _GoalUI: {fileID: 1440063516478030}

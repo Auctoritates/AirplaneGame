@@ -16,6 +16,7 @@ public class ResultManager : MonoBehaviour
 	[SerializeField] private Text _TotalSNumberText;
  	public string _ActionCode;
 	public bool _IsResultOK;
+	public bool _IsEndOK;
 
 	private Image _TmpImage;
 	private Text _TmpText;
@@ -47,22 +48,24 @@ public class ResultManager : MonoBehaviour
 		_ActionCode = "";
 		_IsResultOK = false;
 	}
+	
 	void SetResultOn()
 	{
 		_ResultUI.SetActive(true);
 		_Alpha = 255f;
-//		SetColor();
+		SetColor();
 		}
 	void SetResultOff()
 	{
 		_Alpha = 0f;
-//		SetColor();		
+		SetColor();		
 		_ResultUI.SetActive(false);				
 	}
 	void SetColor()
 	{
 		ImageColor(_ResultBackImage1);
 		ImageColor(_ResultBackImage2);
+		TextColor(_ClearStringText);
 		TextColor(_GetSNumberText);
 		TextColor(_GetSStringText);		
 		TextColor(_TotalSStringText);
@@ -82,9 +85,12 @@ public class ResultManager : MonoBehaviour
 	}
 	void Action()
 	{
-		if (Input.GetButton("Submit"))
+		if (_IsEndOK)
 		{
-			_ActionCode = "End";
+			if (Input.GetButton("Submit"))
+			{
+				_ActionCode = "End";
+			}	
 		}
 	}
 }
