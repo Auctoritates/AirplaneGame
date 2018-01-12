@@ -9,6 +9,6 @@ public class RadarManager : MonoBehaviour {
 	void Update () {
 		Vector3 test = airplane.GetComponent<Transform>().position;
 		GetComponent<Transform>().position += airplane.GetComponent<Transform>().position;
-
+		
 	}
 }
