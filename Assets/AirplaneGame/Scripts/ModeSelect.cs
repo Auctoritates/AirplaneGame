@@ -265,7 +265,11 @@ public class ModeSelect : MonoBehaviour
 		{
 			//ゲーム終了
 			//Debug.Log("ゲーム終了");
-			Application.Quit();
+			#if UNITY_EDITOR
+				UnityEditor.EditorApplication.isPlaying = false;
+			#else
+				Application.Quit();
+			#endif
 		}
 		else if (_Code == _OptionMode)
 		{
