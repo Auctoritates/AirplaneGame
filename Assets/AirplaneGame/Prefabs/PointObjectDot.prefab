@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 224641882757736766}
   - component: {fileID: 222213269939745998}
   - component: {fileID: 114922432708460428}
-  - component: {fileID: 114611126589737292}
   m_Layer: 5
   m_Name: PointObjectDot
   m_TagString: Untagged
@@ -29,18 +28,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114611126589737292
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1755039876804718}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3f0a97c41a864d1d9ab5bcc58423010, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  airplane: {fileID: 0}
 --- !u!114 &114922432708460428
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -89,6 +76,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -39.98, y: 0.000030517578}
+  m_AnchoredPosition: {x: -26.9, y: 0.000030517578}
   m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}

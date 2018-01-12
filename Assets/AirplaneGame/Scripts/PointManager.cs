@@ -20,9 +20,7 @@ public class PointManager : MonoBehaviour {
 			};
 
 			pointObjectSet.Add(Instantiate(pointObject, randomPosition, Quaternion.identity));
-			pointObjectDotManager.GetComponent<PointObjectDotManager>().GenerateDot(pointObjectSet);
 		}
-
+		pointObjectDotManager.GetComponent<PointObjectDotManager>().GenerateDot(pointObjectSet);
 	}
-
 }
