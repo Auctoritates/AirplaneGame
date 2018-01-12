@@ -219,6 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ResultUI: {fileID: 1292464476299666}
+  _CameraForResult: {fileID: 0}
   _ResultBackImage1: {fileID: 114663332750428472}
   _ResultBackImage2: {fileID: 114831739914613426}
   _ClearStringText: {fileID: 114508356714350278}
@@ -387,7 +388,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'TotalScore : '
+  m_Text: 'Total : '
 --- !u!114 &114725026954680620
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -580,7 +581,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 24.999985, y: 35}
+  m_AnchoredPosition: {x: 25, y: 29}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!224 &224416308751420104
@@ -670,7 +671,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 25, y: 35}
+  m_AnchoredPosition: {x: 25, y: 32}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0, y: 0}
 --- !u!224 &224695396838577288

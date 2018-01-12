@@ -9,6 +9,8 @@ public class GoalManager : MonoBehaviour
 	[SerializeField] private GameObject _BodyObject; //機体オブジェクトを登録する場所を作る
 	[SerializeField] private GameObject _GoalObject; //ゴールオブジェクトを登録する場所を作る
 	[SerializeField] private GameObject _GoalUI; //ゴール時に表示するエフェクトのUIを登録する場所を作る
+	[SerializeField] private Camera _MainCamera;
+	[SerializeField] private Camera _CameraForResult;
 	private GameObject _ResultManager;
 	ResultManager _ResultManagerScript;
 
@@ -36,32 +38,15 @@ public class GoalManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		//デバッグモードをオフにする
-		//_DebugMode = false; 
 		_WaitCount = 0;
 		
 		_ResultManager = GameObject.Find("ResultManager");
 		_ResultManagerScript = _ResultManager.GetComponent<ResultManager>();
+		_MainCamera = Camera.main;
+		_MainCamera.GetComponent<Camera>().enabled = true;
+		_CameraForResult.GetComponent<Camera>().enabled = false;
 		_GoalMode = 0;
 
-/*		//ゴールUIの透明度を戻したうえで非アクティブにする
-		_Alpha = 255f;
-		AppearImage(_GBImage);
-		AppearImage(_GWImage);
-		AppearText(_GText);
-		_GBImageColor = _GBImage.GetComponent<Image>().color;
-		_GBImageColor.a = _Alpha;
-		_GBImage.GetComponent<Image>().color = _GBImageColor;
-		_GWImageColor = _GWImage.GetComponent<Image>().color;
-		_GWImageColor.a = _Alpha;
-		_GWImage.GetComponent<Image>().color = _GWImageColor;
-		_GTColor = _GText.GetComponent<Text>().color;
-		_GTColor.a = _Alpha;
-		_GText.GetComponent<Text>().color = _GTColor;
-*/
-		
-		//_WhiteImage.GetComponent<Image>().color.a = _Alpha;
-		//_GoalText.GetComponent<Text>().color.a = _Alpha;
 		_GoalUI.SetActive(false);
 
 		//基準となるPlaneの基本サイズを設定する
@@ -125,7 +110,7 @@ public class GoalManager : MonoBehaviour
 	void GoalEffect1()//時間をスローにする
 	{
 		//Debug.Log("Clear!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		Time.timeScale = 0.1f;
+		Time.timeScale = 0.2f;
 		_GoalUI.SetActive(true);	
 	}
 	void GoalEffect2()//段々とゴールUIを表示する
@@ -165,7 +150,7 @@ public class GoalManager : MonoBehaviour
 				else if (_Alpha < 1f)
 				{
 					Debug.Log("追加");
-					_Alpha += 1f/255f;
+					_Alpha += 5f/255f;
 					GoalEffect2();
 					_WaitCount++;	
 				}
@@ -182,6 +167,8 @@ public class GoalManager : MonoBehaviour
 					_GoalMode++;
 					_WaitCount = 0;
 					_ResultManagerScript._IsResultOK = true;
+					_MainCamera.GetComponent<Camera>().enabled = false;
+					_CameraForResult.GetComponent<Camera>().enabled = true;
 				}
 				break;
 			case 3://ゴール後エフェクト撤去済み
@@ -193,6 +180,7 @@ public class GoalManager : MonoBehaviour
 				}
 				break;
 			case 4:
+					Time.timeScale = 1.0f;
 					_ResultManagerScript._IsEndOK = true;
 					break;				
 			default:
